@@ -10,15 +10,15 @@ import scala.util.{Try, Using}
 class Listener() extends Actor {
   var workerGroupRef: ActorRef = _
   var tcpConnectionManager: ActorRef = _
-  def findFreePort(): Try[Int] = Using(new ServerSocket(0))(_.getLocalPort)
 
+  def findFreePort(): Try[Int] = Using(new ServerSocket(0))(_.getLocalPort)
 
 
   override def receive: Receive = {
     case ("start", actorRef: ActorRef) =>
       workerGroupRef = actorRef
       var port = findFreePort().get
-      port = 5012
+      port = 5012 //TODO remove this line
       tcpConnectionManager = context.actorOf(Props(new TCPConnectionManager("localhost", port)))
 
       tcpConnectionManager ! "start"
