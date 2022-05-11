@@ -1,19 +1,19 @@
 package com.main
 
-import akka.actor.{Actor, Props}
+import akka.actor.{Actor, ActorRef, Props}
 
 class Pipeline extends Actor {
-  val workerGroup = context.actorOf(Props[WorkerGroup], "workerGroup")
-  val listener = context.actorOf(Props[Listener], "listener")
+  val worker: ActorRef = context.actorOf(Props[Worker], "worker")
+  val listener: ActorRef = context.actorOf(Props[Listener], "listener")
 
   override def receive: Receive = {
     case createPipeline: CreatePipeline =>
-      listener ! CreateListener(workerGroup, createPipeline.port)
+      listener ! CreateListener(worker, createPipeline.port)
 
     case subscribeConsumer: SubscribeConsumer =>
-      workerGroup ! subscribeConsumer
+      worker ! subscribeConsumer
 
     case unsubscribeConsumer: UnsubscribeConsumer =>
-      workerGroup ! unsubscribeConsumer
+      worker ! unsubscribeConsumer
   }
 }

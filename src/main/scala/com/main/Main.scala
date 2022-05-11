@@ -1,4 +1,3 @@
-//#full-example
 package com.main
 
 
