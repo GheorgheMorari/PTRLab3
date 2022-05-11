@@ -3,7 +3,7 @@ package com.main
 import spray.json._
 import akka.actor.ActorRef
 
-case class ProducerMessage(string: String) {
+case class JsonMessage(string: String, sender: String = "") {
   var json: JsObject = string.parseJson.asJsObject
 
   def getMessage: String = {
@@ -11,21 +11,17 @@ case class ProducerMessage(string: String) {
   }
 
   def get_topic: String = {
-    this.get_field("topic")
+    this.get_field("topic").toString()
   }
 
-  def get_field(field: String): String = {
-    json.fields(field).toString()
+  def get_field(field: String): JsObject = {
+    json.fields(field).asJsObject
   }
 }
 
 
-case class StartMessage(actorRef: ActorRef) {
+case class ActorRefMessage(actorRef: ActorRef) {
   def getActorRef: ActorRef = {
     actorRef
   }
-}
-
-case class StopMessage() {
-//  private val stop = "stop"
 }
