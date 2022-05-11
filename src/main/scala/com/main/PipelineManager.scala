@@ -14,13 +14,15 @@ class PipelineManager extends Actor {
       val pipeline = context.actorOf(Props[Pipeline], createPipeline.port.toString)
       pipeline_hash_map += (createPipeline.port -> pipeline)
       pipeline_array += pipeline
-      pipeline ! CreatePipeline
+      pipeline ! createPipeline
 
     case subscribeConsumer: SubscribeConsumer =>
       pipeline_array.foreach(pipeline => pipeline ! subscribeConsumer)
 
     case unsubscribeConsumer: UnsubscribeConsumer =>
       pipeline_array.foreach(pipeline => pipeline ! unsubscribeConsumer)
+    case _ =>
+      println("PipelineManager: Unknown message")
   }
 
 }
