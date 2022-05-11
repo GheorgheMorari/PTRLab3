@@ -12,7 +12,7 @@ class TCPConnectionManager(address: String, port: Int) extends Actor {
   import context.system
 
   IO(Tcp) ! Bind(self, new InetSocketAddress(address, port))
-  val handler: ActorRef = context.actorOf(Props[TCPConnectionHandler])
+  var handler: ActorRef = _
 
   override def receive: Receive = {
     case Bound(local) =>
@@ -20,6 +20,7 @@ class TCPConnectionManager(address: String, port: Int) extends Actor {
 
     case Connected(remote, local) =>
       println(s"New connnection: $local -> $remote")
+      handler = context.actorOf(Props[TCPConnectionHandler])
       sender() ! Register(handler)
       handler ! remote.toString
 
@@ -33,7 +34,7 @@ class TCPConnectionHandler extends Actor {
 
   override def receive: Actor.Receive = {
     case Received(data) =>
-      val decoded = data.utf8String
+      val decoded = data.decodeString("utf-8")
       context.parent ! JsonMessage(decoded, remote)
       sender() ! Write(ByteString(s"OK"))
 

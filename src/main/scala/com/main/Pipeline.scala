@@ -15,6 +15,7 @@ class Pipeline extends Actor {
 
     case unsubscribeConsumer: UnsubscribeConsumer =>
       worker ! unsubscribeConsumer
+
     case _ =>
       println("Unknown message")
   }

@@ -11,7 +11,7 @@ class Worker() extends Actor {
       println("Worker: Received UnsubscribeConsumer", unsubscribeConsumer)
 
     case message: JsonMessage =>
-      println(s"Worker received message: $message")
       println(message.get_topic)
+//      println(s"Worker received message: $message")
   }
 }

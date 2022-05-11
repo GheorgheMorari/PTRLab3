@@ -13,7 +13,6 @@ class Listener() extends Actor {
 
 
     case jsonMessage: JsonMessage =>
-      println(s"received json message: $jsonMessage")
       this.workerRef ! jsonMessage
 
     case a =>
