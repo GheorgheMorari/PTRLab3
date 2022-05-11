@@ -6,7 +6,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 class PipelineManager extends Actor {
-  val pipeline_hash_map = mutable.HashMap.empty[String, ActorRef]
+  val pipeline_hash_map = mutable.HashMap.empty[Int, ActorRef]
   val pipeline_array: ArrayBuffer[ActorRef] = mutable.ArrayBuffer.empty[ActorRef]
 
   override def receive: Receive = {
