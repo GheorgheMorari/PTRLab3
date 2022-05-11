@@ -22,7 +22,7 @@ class TCPConnectionManager(address: String, port: Int) extends Actor {
       println(s"New connnection: $local -> $remote")
       sender() ! Register(handler)
     case message: String =>
-      context.parent ! message
+      context.parent ! ProducerMessage(message)
   }
 }
 

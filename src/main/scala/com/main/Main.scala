@@ -2,8 +2,7 @@
 package com.main
 
 
-import akka.actor.{ActorSystem, Props, Actor}
-
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 
@@ -18,10 +17,11 @@ object Main extends App {
   var dummy_worker_group = system.actorOf(Props[WorkerGroup], "worker-group")
   var dummy_listener = system.actorOf(Props[Listener], "listener")
 
-  dummy_listener ! ("start", dummy_worker_group)
+  dummy_listener ! new StartMessage(dummy_worker_group)
 
   //#main-send-messages
 }
+
 
 //
 ////# main-supervisor

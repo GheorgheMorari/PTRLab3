@@ -11,24 +11,25 @@ class Listener() extends Actor {
   var workerGroupRef: ActorRef = _
   var tcpConnectionManager: ActorRef = _
 
-  def findFreePort(): Try[Int] = Using(new ServerSocket(0))(_.getLocalPort)
+  private def findFreePort(): Try[Int] = Using(new ServerSocket(0))(_.getLocalPort)
 
 
   override def receive: Receive = {
-    case ("start", actorRef: ActorRef) =>
-      workerGroupRef = actorRef
+    case message: StartMessage =>
+      workerGroupRef = message.getActorRef
       var port = findFreePort().get
       port = 5012 //TODO remove this line
       tcpConnectionManager = context.actorOf(Props(new TCPConnectionManager("localhost", port)))
 
-      tcpConnectionManager ! "start"
-      println(s"worker group started, address: $this.workerGroupRef")
-
-    case "stop" =>
+    case StopMessage =>
       context.stop(self)
 
-    case message: String =>
-      this.workerGroupRef ! message
+    case producerMessage: ProducerMessage =>
+      println(s"received json message: $producerMessage")
+      this.workerGroupRef ! producerMessage
+
+    case a =>
+      print("unknown message:", a)
   }
 }
 

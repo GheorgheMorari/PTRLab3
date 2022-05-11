@@ -4,6 +4,8 @@ import akka.actor.Actor
 
 class WorkerGroup() extends Actor {
   override def receive: Receive = {
-    case message: String => println(s"WorkerGroup received message: $message")
+    case message: ProducerMessage =>
+      println(s"WorkerGroup received message: $message")
+      println(message.get_topic)
   }
 }
