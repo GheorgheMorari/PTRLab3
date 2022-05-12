@@ -8,7 +8,7 @@ class Listener() extends Actor {
 
   override def receive: Receive = {
     case createListener: CreateListener =>
-      tcpConnectionManager = context.actorOf(Props(new TCPConnectionManager("localhost", createListener.port)))
+      tcpConnectionManager = context.actorOf(Props(new TcpServerManager("localhost", createListener.port)))
 
     case jsonMessage: JsonMessage =>
       this.workerRef ! jsonMessage

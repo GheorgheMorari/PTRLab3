@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class Subscriber extends Actor {
   val port = 9999
-  val tcpConnectionManager: ActorRef = context.actorOf(Props(new TCPConnectionManager("localhost", port)))
+  val tcpConnectionManager: ActorRef = context.actorOf(Props(new TcpServerManager("localhost", port)))
   val pipeline: ActorSelection = context.actorSelection("akka://default/user/pipeline/")
 
   override def receive: Receive = {

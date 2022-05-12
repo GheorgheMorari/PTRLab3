@@ -7,7 +7,7 @@ import akka.io.Tcp._
 import akka.util.ByteString
 
 
-class TCPConnectionManager(address: String, port: Int) extends Actor {
+class TcpServerManager(address: String, port: Int) extends Actor {
 
   import context.system
 
@@ -20,7 +20,7 @@ class TCPConnectionManager(address: String, port: Int) extends Actor {
 
     case Connected(remote, local) =>
       println(s"New connnection: $local -> $remote")
-      handler = context.actorOf(Props[TCPConnectionHandler])
+      handler = context.actorOf(Props[TcpServerHandler])
       sender() ! Register(handler)
       handler ! remote.toString
 
@@ -29,7 +29,7 @@ class TCPConnectionManager(address: String, port: Int) extends Actor {
   }
 }
 
-class TCPConnectionHandler extends Actor {
+class TcpServerHandler extends Actor {
   var remote: String = ""
 
   override def receive: Actor.Receive = {
