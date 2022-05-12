@@ -2,13 +2,17 @@ package com.main
 
 import akka.actor.{Actor, ActorRef, Props}
 
+import scala.collection.mutable.ListBuffer
+
 class Pipeline extends Actor {
   val worker: ActorRef = context.actorOf(Props[Worker], "worker")
-  val listener: ActorRef = context.actorOf(Props[Listener], "listener")
+  var listener_list = new ListBuffer[ActorRef]()
 
   override def receive: Receive = {
-    case createPipeline: CreatePipeline =>
-      listener ! CreateListener(worker, createPipeline.port)
+    case createListener: CreateListener =>
+      val new_listener = context.actorOf(Props[Listener])
+      new_listener ! createListener
+      listener_list += new_listener
 
     case subscribeConsumer: SubscribeConsumer =>
       worker ! subscribeConsumer

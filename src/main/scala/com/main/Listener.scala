@@ -1,16 +1,14 @@
 package com.main
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{Actor, ActorRef, ActorSelection, Props}
 
 class Listener() extends Actor {
-  var workerRef: ActorRef = _
+  var workerRef: ActorSelection = context.actorSelection("../worker")
   var tcpConnectionManager: ActorRef = _
 
   override def receive: Receive = {
     case createListener: CreateListener =>
-      workerRef = createListener.actorRef
       tcpConnectionManager = context.actorOf(Props(new TCPConnectionManager("localhost", createListener.port)))
-
 
     case jsonMessage: JsonMessage =>
       this.workerRef ! jsonMessage
@@ -20,5 +18,5 @@ class Listener() extends Actor {
   }
 }
 
-case class CreateListener(actorRef: ActorRef, port: Int)
+case class CreateListener(port: Int)
 

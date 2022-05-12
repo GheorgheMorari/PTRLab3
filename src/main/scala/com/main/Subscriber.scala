@@ -2,10 +2,12 @@ package com.main
 
 import akka.actor.{Actor, ActorRef, ActorSelection, Props}
 
+import scala.collection.mutable.ArrayBuffer
+
 class Subscriber extends Actor {
   val port = 9999
   val tcpConnectionManager: ActorRef = context.actorOf(Props(new TCPConnectionManager("localhost", port)))
-  val pipelineManager: ActorSelection = context.actorSelection("../pipelineManager")
+  val pipeline: ActorSelection = context.actorSelection("akka://default/user/pipeline/")
 
   override def receive: Receive = {
     case jsonMessage: JsonMessage =>
@@ -16,13 +18,16 @@ class Subscriber extends Actor {
         case e: Exception =>
           println("Error: " + e.getMessage)
       }
-
-
       if (operation_type == "subscribe") {
-        pipelineManager ! SubscribeConsumer(jsonMessage.sender)
+        val topic_arr = jsonMessage.get_field("topic").toString().replace("[", "").replace("]", "").split(',')
+        val client_address = jsonMessage.get_field("client_address").toString().replace("\"", "")
+        pipeline ! SubscribeConsumer(client_address, topic_arr.to(ArrayBuffer))
       }
+
       else if (operation_type == "unsubscribe") {
-        pipelineManager ! UnsubscribeConsumer(jsonMessage.sender)
+        val topic_arr = jsonMessage.get_field("topic").toString().replace("[", "").replace("]", "").split(',')
+        val client_address = jsonMessage.get_field("client_address").toString().replace("\"", "")
+        pipeline ! UnsubscribeConsumer(client_address, topic_arr.to(ArrayBuffer))
       }
       else {
         println("Error: Unknown operation type")
@@ -31,6 +36,6 @@ class Subscriber extends Actor {
 }
 
 
-case class SubscribeConsumer(consumer_address: String)
+case class SubscribeConsumer(consumer_address: String, topic_array: ArrayBuffer[String])
 
-case class UnsubscribeConsumer(consumer_address: String)
+case class UnsubscribeConsumer(consumer_address: String, topic_array: ArrayBuffer[String])

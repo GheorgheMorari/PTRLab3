@@ -6,10 +6,10 @@ import akka.actor.{ActorSystem, Props}
 object Main extends App {
   val system = ActorSystem()
   val subscriber = system.actorOf(Props[Subscriber], "subscriber")
-  val pipelineManager = system.actorOf(Props[PipelineManager], "pipelineManager")
+  val pipeline = system.actorOf(Props[Pipeline], "pipeline")
   var port = 9000
-  pipelineManager ! CreatePipeline(port)
+  pipeline ! CreateListener(port)
   port += 1
-  pipelineManager ! CreatePipeline(port)
+  pipeline ! CreateListener(port)
 }
 
