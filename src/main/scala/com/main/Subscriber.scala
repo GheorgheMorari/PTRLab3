@@ -7,7 +7,7 @@ import scala.collection.mutable.ArrayBuffer
 class Subscriber extends Actor {
   val port = 9999
   val tcpConnectionManager: ActorRef = context.actorOf(Props(new TcpServerManager("localhost", port)))
-  val pipeline: ActorSelection = context.actorSelection("akka://default/user/pipeline/")
+  val worker: ActorSelection = context.actorSelection("akka://default/user/pipeline/worker")
 
   override def receive: Receive = {
     case jsonMessage: JsonMessage =>
@@ -21,13 +21,13 @@ class Subscriber extends Actor {
       if (operation_type == "subscribe") {
         val topic_arr = jsonMessage.get_field("topic").toString().replace("[", "").replace("]", "").split(',')
         val consumer_address = jsonMessage.get_field("consumer_address").toString().replace("\"", "")
-        pipeline ! SubscribeConsumer(consumer_address, topic_arr.to(ArrayBuffer))
+        worker ! SubscribeConsumer(consumer_address, topic_arr.to(ArrayBuffer))
       }
 
       else if (operation_type == "unsubscribe") {
         val topic_arr = jsonMessage.get_field("topic").toString().replace("[", "").replace("]", "").split(',')
         val consumer_address = jsonMessage.get_field("consumer_address").toString().replace("\"", "")
-        pipeline ! UnsubscribeConsumer(consumer_address, topic_arr.to(ArrayBuffer))
+        worker ! UnsubscribeConsumer(consumer_address, topic_arr.to(ArrayBuffer))
       }
       else {
         println("Error: Unknown operation type")

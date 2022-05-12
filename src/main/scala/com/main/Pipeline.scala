@@ -14,12 +14,6 @@ class Pipeline extends Actor {
       new_listener ! createListener
       listener_list += new_listener
 
-    case subscribeConsumer: SubscribeConsumer =>
-      worker ! subscribeConsumer
-
-    case unsubscribeConsumer: UnsubscribeConsumer =>
-      worker ! unsubscribeConsumer
-
     case _ =>
       println("Unknown message")
   }
