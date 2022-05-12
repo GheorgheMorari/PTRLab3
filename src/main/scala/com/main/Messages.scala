@@ -1,7 +1,8 @@
 package com.main
 
 import play.api.libs.json._
-import akka.actor.ActorRef
+
+import scala.collection.mutable.ArrayBuffer
 
 case class JsonMessage(string: String, sender: String = "") {
   val json: JsValue = Json.parse(string)
@@ -20,9 +21,8 @@ case class JsonMessage(string: String, sender: String = "") {
   }
 }
 
+case class SubscribeConsumer(consumer_address: String, topic_array: ArrayBuffer[String])
 
-case class ActorRefMessage(actorRef: ActorRef) {
-  def getActorRef: ActorRef = {
-    actorRef
-  }
-}
+case class UnsubscribeConsumer(consumer_address: String, topic_array: ArrayBuffer[String])
+
+case class CreateListener(port: Int)

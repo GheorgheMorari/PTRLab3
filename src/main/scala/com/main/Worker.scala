@@ -61,5 +61,3 @@ class Worker() extends Actor {
   }
 
 }
-
-case class Work(message: JsonMessage, iterator: Iterator[String])

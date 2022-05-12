@@ -18,5 +18,3 @@ class Listener() extends Actor {
   }
 }
 
-case class CreateListener(port: Int)
-

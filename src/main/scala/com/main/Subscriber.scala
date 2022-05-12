@@ -35,7 +35,3 @@ class Subscriber extends Actor {
   }
 }
 
-
-case class SubscribeConsumer(consumer_address: String, topic_array: ArrayBuffer[String])
-
-case class UnsubscribeConsumer(consumer_address: String, topic_array: ArrayBuffer[String])
