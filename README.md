@@ -4,45 +4,70 @@ University laboratory nr. 3 for Real Time Programming course
 
 # Technologies
 
-- Scala
-- Akka framework
-- more?
+- Message broker:
+    - Scala == 2.13.1
+    - Akka == 2.6.19
+- Producer:
+    - python == 3.9
+    - sseclient-py ~= 1.7.2
+- Consumer:
+    - python == 3.9
 
-# Actor
-
-- `Main supervisor`: Actor that starts the `ListenerGroup`, `Balancer` and `Subscriber` actors.
-- `ListenerGroup`: Actor that creates and supervises `Listener` actors.
-- `Balancer`: Actor that creates `Worker Group` actors.
-- `Worker Group`: Actor that creates `Worker` actors.
-- `Subscriber`: Actor that binds one `Worker group` actor to one `Listener group` actor when a producer subscribes.
-- `Worker`: Actor that sends the messages to the consumers.
-- `Listener`: Actor that receives messages from the producers. Sends the messages to the corresponding `Worker Group`
-  actor.
+# Actors
+- `Main supervisor`: The supervisor that starts the `Subscriber` and the `Pipeline` actors.
+- `Pipeline`: Supervisor for `Listener` and `Worker` actors.
+- `Subscriber`: The actor that receives subscribe/unsubscribe requests as JsonMessages from `TcpServerManager`.
+Forwards `Worker` actors which consumer to subscribe/unsubscribe to what topic.
+- `Listener`: Supervisor for `TcpServerManager` and `TcpServerHandler`. Forward messages from `TcpServerManager` to `Worker` actors.
+- `TcpServerManager`: Actor that manages the TCP connection and forwards JsonMessages to `Listener`.
+- `TcpServerHandler`: Actor that handles the TCP packets serializes them into JsonMessages and forwards them to `TcpServerManager`.
+- `Worker`: Actor that sends the correct messages to the corresponding consumers using `TcpClient`.
 
 # Actor input-output
 
-- `ListenerGroup`: Receives message that contains an address to a worker group to create `Listener` actors.
-- `WorkerGroup`: Receives messages from the `Listener` actors. Sends the messages to the `Worker` actors.
-- `Worker`: Receives message and Consumer address from the `Worker Group` actors. Sends the messages to the Client.
-- `Subscriber`: Receives subscription requests from Clients or Producers.
-- `Listener`: Receives messages from a Producer. Sends the messages to the according `Worker Group` actor.
+- `Worker`: 
+  - Input: `JsonMessage`, `SubscribeConsumer`, `UnsubscribeConsumer`.
+  - Output: `JsonMessage`.
+- `Subscriber`: 
+  - Input: `JsonMessage`.
+  - Output: `SubscribeConsumer`, `UnsubscribeConsumer`.
+- `Listener`:
+  - Input: `JsonMessage`.
+  - Output: `JsonMessage`.
+- `TcpServerManager`:
+  - Input: `JsonMessage`.
+  - Output: `JsonMessage`.
+- `TcpServerHandler`:
+  - Input: `ByteString`.
+  - Output: `JsonMessage`.
+- `TcpClient`:
+  - Input: `JsonMessage`.
+  - Output: `ByteString`.
+- `Pipeline`:
+  - Input: `CreateListener`.
+  - Output: None.
 
+# IO Classes
+- `JsonMessage` is a class that contains string message and a sender, the message being easily processed into a json object.
+- `SubscribeConsumer` is a class that contains a topic and a consumer.
+- `UnsubscribeConsumer` is a class that contains a topic and a consumer.
+- `CreateListener` is a class that contains a port number.
 # Endpoints
 
-- `http://localhost:8080/prod_subscribe`: endpoint for the `Subscriber` actor for subscription of producers.
-- `http://localhost:8080/prod_unsubscribe`: endpoint for the `Subscriber` actor for unsubscription of producers.
-- `http://localhost:8080/client_subscribe`: endpoint for the `Subscriber` actor for subscription of clients.
-- `http://localhost:8080/client_unsubscribe`: endpoint for the `Subscriber` actor for unsubscription of clients.
-- `http://localhost:808x/publish`: endpoint for the x-th `Listener` actor.
+- `localhost:9999` endpoint for the `Subscriber` actor. Accepts json messages that contain:
+    - Operation: `"operation" : "subscribe"` or `"operation" : "unsubscribe"`
+    - Topics: `"topic" : ["topic1", "topic2", "topic3"]`
+    - Consumer_address: `"consumer_address" : "localhost:xxxxx"`
+- `localhost:9000` endpoint for the first `Listener` actor. Accepts json messages from docker image.
+- `localhost:9001` endpoint for the second `Listener` actor. Accepts json messages from docker image.
 
 # Supervision tree
 
 ![](images/supervision_tree.png)
 
-# Subscribe and unsubscribe workflows
+# Subscribe and unsubscribe workflow
 
-![](images/producer_sub_unsub.png)
-![](images/consumer_sub_unsub.png)
+![](images/sub_unsub_workflow.png)
 
 # Publish workflow
 
