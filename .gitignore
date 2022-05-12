@@ -4,3 +4,5 @@ target
 .bsp
 .idea
 null
+python_projects/consumer/__pycache__/
+python_projects/producer/__pycache__/
