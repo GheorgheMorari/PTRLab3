@@ -20,14 +20,14 @@ class Subscriber extends Actor {
       }
       if (operation_type == "subscribe") {
         val topic_arr = jsonMessage.get_field("topic").toString().replace("[", "").replace("]", "").split(',')
-        val client_address = jsonMessage.get_field("client_address").toString().replace("\"", "")
-        pipeline ! SubscribeConsumer(client_address, topic_arr.to(ArrayBuffer))
+        val consumer_address = jsonMessage.get_field("consumer_address").toString().replace("\"", "")
+        pipeline ! SubscribeConsumer(consumer_address, topic_arr.to(ArrayBuffer))
       }
 
       else if (operation_type == "unsubscribe") {
         val topic_arr = jsonMessage.get_field("topic").toString().replace("[", "").replace("]", "").split(',')
-        val client_address = jsonMessage.get_field("client_address").toString().replace("\"", "")
-        pipeline ! UnsubscribeConsumer(client_address, topic_arr.to(ArrayBuffer))
+        val consumer_address = jsonMessage.get_field("consumer_address").toString().replace("\"", "")
+        pipeline ! UnsubscribeConsumer(consumer_address, topic_arr.to(ArrayBuffer))
       }
       else {
         println("Error: Unknown operation type")

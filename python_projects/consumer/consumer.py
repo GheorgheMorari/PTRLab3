@@ -65,7 +65,7 @@ class Consumer:
         subscribe_socket.connect((subscribe_host, subscribe_port))
         subscribe_socket.send(json.dumps(
             {"operation": "subscribe", "topic": list(self.topic_set),
-             "client_address": self.host + ':' + str(self.port)}).encode(
+             "consumer_address": self.host + ':' + str(self.port)}).encode(
             'utf-8'))
         response = subscribe_socket.recv(1024)
         subscribe_socket.close()
@@ -75,7 +75,7 @@ class Consumer:
         unsubscribe_socket.connect((subscribe_host, subscribe_port))
         unsubscribe_socket.send(json.dumps(
             {"operation": "unsubscribe", "topic": list(self.topic_set),
-             "client_address": self.host + ':' + str(self.port)}).encode('utf-8'))
+             "consumer_address": self.host + ':' + str(self.port)}).encode('utf-8'))
 
         response = unsubscribe_socket.recv(1024)
         unsubscribe_socket.close()

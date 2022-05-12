@@ -14,7 +14,7 @@ class Worker() extends Actor {
 
   override def receive: Receive = {
     case subscribeConsumer: SubscribeConsumer =>
-      // Check client topic count if it exists
+      // Check consumer topic count if it exists
       if (!consumer_topic_array_map.contains(subscribeConsumer.consumer_address)) {
         // If it doesn't exist, create a new count
         consumer_topic_array_map += (subscribeConsumer.consumer_address -> ArrayBuffer[String]())
@@ -49,24 +49,15 @@ class Worker() extends Actor {
       val topic = message.get_topic
       // Check if topic is already present in the map
       if (topic_consumer_array_map.contains(topic)) {
-        // Get the array of clients for the topic
-        val client_list = topic_consumer_array_map(topic)
-        // For each client, send the message
-
-        for (client_address <- client_list) {
+        // Get the array of consumers for the topic
+        val consumer_arr = topic_consumer_array_map(topic)
+        // For each consumer, send the message
+        for (consumer_address <- consumer_arr) {
           val bytes = message.json.toString.getBytes("utf-8")
-          consumer_actor_map(client_address) ! ByteString.fromArray(bytes)
+          consumer_actor_map(consumer_address) ! ByteString.fromArray(bytes)
         }
-
-        //
-        //        val sender_actor = context.actorOf(Props[Sender])
-        //        println("Sending message to: ", client_list)
-        //        sender_actor ! Work(message, client_list.iterator)
       }
 
-
-    //      println(message.get_topic)
-    //      println(s"Worker received message: $message")
   }
 
 }
