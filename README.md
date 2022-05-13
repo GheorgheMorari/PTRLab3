@@ -10,6 +10,7 @@ University laboratory nr. 3 for Real Time Programming course
 - Producer:
     - python == 3.9
     - sseclient-py ~= 1.7.2
+    - requests ~= 2.27.1
 - Consumer:
     - python == 3.9
 
