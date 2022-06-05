@@ -1,0 +1,59 @@
+services:
+  message_broker:
+    build: ./
+    command: sbt compile run -Dsbt.rootdir=true
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+      - "9999:9999"
+##    volumes:
+##      - ./:/opt/
+##    networks:
+##      - rtp-network
+
+  producer_container:
+    image: alexburlacu/rtp-server:faf18x
+    ports:
+      - "4000:4000"
+#    networks:
+#      - rtp-network
+
+  producer_wrapper:
+    build: ./python_projects/producer/
+    environment:
+      - HOST=host.docker.internal
+    command: python producer.py
+    stdin_open: true
+    tty: true
+#    ports:
+#      - "9000:9000"
+#      - "9001:9001"
+    volumes:
+      - ./python_projects/producer/:/app
+
+#    depends_on:
+#      - producer_container
+#      - message_broker
+    restart: on-failure:111
+#    networks:
+#      - rtp-network
+#
+  consumer:
+    build: ./python_projects/consumer/
+    command: python consumer.py
+    stdin_open: true
+    ports:
+      - "10000-10100:10000-10100"
+    tty: true
+#    volumes:
+#      - ./python_projects/consumer/:/app
+    depends_on:
+      - message_broker
+##    networks:
+##      - rtp-network
+
+
+#networks:
+#  rtp-network:
+#    name: rtp-network
+#    driver: bridge

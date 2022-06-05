@@ -1,7 +1,6 @@
 package com.main
 
-import akka.actor.{Actor, ActorRef, PoisonPill, Props}
-import akka.io.Tcp.Close
+import akka.actor.{Actor, ActorRef, Props}
 import akka.util.ByteString
 
 import scala.collection.mutable.ArrayBuffer

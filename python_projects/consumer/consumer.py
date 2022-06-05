@@ -9,7 +9,7 @@ import time
 
 host = "localhost"
 start_port = 10001
-subscribe_host = "localhost"
+subscribe_host = "message_broker"
 subscribe_port = 9999
 from topic_list import get_topic_list
 

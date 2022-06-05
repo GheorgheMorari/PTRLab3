@@ -10,11 +10,11 @@ import sseclient
 # The producer must subscribe first to the message broker, at the address http://localhost:8080/prod_subscribe, which returns an address.
 # Then the producer must forward all the messages to the message broker, at the address returned by the subscription. http://localhost:808x/publish
 
-first_stream_url = 'http://localhost:4000/tweets/1'
-second_stream_url = 'http://localhost:4000/tweets/2'
+first_stream_url = 'http://producer_container:4000/tweets/1'
+second_stream_url = 'http://producer_container:4000/tweets/2'
 
-producer_host = 'localhost'
-producer_port = 9000
+broker_host = 'message_broker'
+broker_port = 9000
 
 
 class Producer:
@@ -25,7 +25,7 @@ class Producer:
         self.messages_sent = 0
         self.messages_received = 0
         self.work = True
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def forward(self):
 
@@ -34,7 +34,7 @@ class Producer:
         response = requests.get(self.sse_url, stream=True, headers={'Accept': 'text/event-stream'})
         messages = sseclient.SSEClient(response).events()
 
-        self.socket.connect((self.broker_host, self.broker_port))
+#         self.socket.connect((self.broker_host, self.broker_port))
 
         while self.work:
             try:
@@ -44,8 +44,9 @@ class Producer:
                 continue
 
             try:
-                self.socket.send(msg.data.encode('utf-8'))
-                response = self.socket.recv(1024)
+#                 self.socket.send(msg.data.encode('utf-8'))
+#                 response = self.socket.recv(1024)
+                print("Sent data")
             except OSError:
                 return
 
@@ -63,16 +64,17 @@ class Producer:
 
     def close(self):
         self.work = False
-        self.socket.close()
+#         self.socket.close()
 
 
 if __name__ == '__main__':
+    print("COKC")
     # Read host and port from the arguments
 
-    producer1 = Producer(first_stream_url, producer_host, producer_port)
+    producer1 = Producer(first_stream_url, broker_host, broker_port)
 
-    producer_port += 1
-    producer2 = Producer(second_stream_url, producer_host, producer_port)
+    broker_port += 1
+    producer2 = Producer(second_stream_url, broker_host, broker_port)
 
     t1 = threading.Thread(target=producer1.forward)
     t2 = threading.Thread(target=producer2.forward)

@@ -8,7 +8,8 @@ import akka.io.Tcp._
 import java.net.InetSocketAddress
 
 class TCPClient(host_and_port: String) extends Actor {
-  val host: String = host_and_port.split(":")(0)
+  val host: String = "consumer"
+//  val host: String = host_and_port.split(":")(0)
   val port: Int = host_and_port.split(":")(1).toInt
 
   import context.system
